@@ -1,6 +1,7 @@
 import json
 import boto3
 import uuid
+from datetime import datetime
 
 def add_task_handler(event, context):
     try:
@@ -10,7 +11,7 @@ def add_task_handler(event, context):
         body = json.loads(event['body'])
         title = body['title']
 
-        created_at = updated_at = datetime.utcnow().isoformat()
+        created_at = updated_at = datetime.now().isoformat()
 
         new_task = {
             'id': str(uuid.uuid4()),

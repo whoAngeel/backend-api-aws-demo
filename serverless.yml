@@ -1,5 +1,5 @@
 # "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: mancha
+org: manchilla
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: api-posts
 # "service" is the name of this project. This will also be added to your AWS resource names.
@@ -12,14 +12,14 @@ provider:
     iamRoleStatements:
         - Effect: Allow
           Action:
-              - dynamodb:*
-          # Resource:
-          # - arn
-        - Effect: Allow
-          Action:
-              - cognito-idp:*
-          # Resource:
-          # - arn
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:us-east-1:971422700339:table/TaskTable
+    #     - Effect: Allow
+    #       Action:
+    #           - cognito-idp:*
+    #       # Resource:
+    #       # - arn
 
 functions:
     hello:
@@ -29,11 +29,17 @@ functions:
                   path: /
                   method: get
     createTask:
-        handler: src/addTask.addTask
+        handler: src/addTask.add_task_handler
         events:
             - httpApi:
-                path: /
+                path: /tasks
                 method: post
+    getTasks:
+        handler: src/getTasks.get_tasks_handler
+        events:
+            - httpApi:
+                path: /tasks
+                method: get
 
 
 resources:
