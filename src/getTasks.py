@@ -1,7 +1,7 @@
 import json
 import boto3
 
-def get_tasks_handler(event, context):
+def getTasks_handler(event, context):
     try:
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table('TaskTable')

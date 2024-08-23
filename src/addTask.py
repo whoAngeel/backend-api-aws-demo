@@ -3,7 +3,7 @@ import boto3
 import uuid
 from datetime import datetime
 
-def add_task_handler(event, context):
+def addTask_handler(event, context):
     try:
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table('TaskTable')
