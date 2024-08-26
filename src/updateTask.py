@@ -1,5 +1,6 @@
 import json
 import boto3
+from datetime import datetime
 
 def updateTask_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
@@ -17,12 +18,15 @@ def updateTask_handler(event, context):
                 'body': json.dumps({'message': 'Task not found'})
             }
 
-        # Actualizar el atributo 'completed' de la tarea
+        # Actualizar 'completed' y 'updatedAt' 
+        updatedat = datetime.now().isoformat()
+
         updated_result = table.update_item(
             Key={'id': id},
-            UpdateExpression="SET completed = :newCompleted",
+            UpdateExpression="SET completed = :newCompleted, updatedAt = :newUpdatedAt",
             ExpressionAttributeValues={
-                ':newCompleted': not task['completed']
+                ':newCompleted': not task['completed'],
+                ':newUpdatedAt': updatedat
             },
             ReturnValues="ALL_NEW"
         )

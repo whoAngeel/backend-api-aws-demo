@@ -14,7 +14,7 @@ provider:
           Action:
             - dynamodb:*
           Resource:
-            - arn:aws:dynamodb:us-east-1:971422700339:table/TaskTable
+            - arn:aws:dynamodb:us-east-1:339713100819:table/TaskTable
     #     - Effect: Allow
     #       Action:
     #           - cognito-idp:*
@@ -50,7 +50,7 @@ functions:
         handler: src/updateTask.updateTask_handler
         events:
             - httpApi:
-                path: /tasks/{id}
+                path: /tasks/{id}/toggle
                 method: patch
     deleteTask:
         handler: src/deleteTask.deleteTask_handler

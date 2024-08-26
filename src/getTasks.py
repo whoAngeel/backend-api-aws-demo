@@ -9,6 +9,8 @@ def getTasks_handler(event, context):
         response = table.scan()
         tasks = response.get('Items', [])
 
+        tasks.sort(key=lambda x: x['createdAt'], reverse=True)
+
         return {
             'statusCode': 200,
             'body': json.dumps(tasks)
