@@ -14,12 +14,13 @@ provider:
           Action:
             - dynamodb:*
           Resource:
-            - arn:aws:dynamodb:us-east-1:339713100819:table/TaskTable
-    #     - Effect: Allow
-    #       Action:
-    #           - cognito-idp:*
-    #       # Resource:
-    #       # - arn
+            - arn:aws:dynamodb:us-east-1:339713100819:table/task_table
+        
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:us-east-1:339713100819:table/user_table
 
 functions:
     hello:
@@ -28,49 +29,96 @@ functions:
             - httpApi:
                   path: /
                   method: get
-    createTask:
-        handler: src/addTask.addTask_handler
+    create_task:
+        handler: src/tasks/add_task.add_task
         events:
             - httpApi:
-                path: /tasks
+                path: /users/{userId}/tasks
                 method: post
-    getTasks:
-        handler: src/getTasks.getTasks_handler
+    get_tasks:
+        handler: src/tasks/get_tasks.get_tasks
         events:
             - httpApi:
-                path: /tasks
+                path: /users/{userId}/tasks
                 method: get
-    getTask:
-        handler: src/getTask.getTask_handler
+    get_task:
+        handler: src/tasks/get_task.get_task
         events:
             - httpApi:
-                path: /tasks/{id}
+                path: /users/{userId}/tasks/{taskId}
                 method: get
-    updateTask:
-        handler: src/updateTask.updateTask_handler
+    delete_task:
+        handler: src/tasks/delete_task.delete_task
         events:
             - httpApi:
-                path: /tasks/{id}/toggle
-                method: patch
-    deleteTask:
-        handler: src/deleteTask.deleteTask_handler
-        events:
-            - httpApi:
-                path: /tasks/{id}
+                path: /users/{userId}/tasks/{taskId}
                 method: delete
+    toggle_task:
+        handler: src/tasks/toggle_task.toggle_task
+        events:
+            - httpApi:
+                path: /users/{userId}/tasks/{taskId}/toggle
+                method: patch
 
+    create_user:
+        handler: src/users/add_user.add_user
+        events:
+            - httpApi:
+                path: /users
+                method: post
+    get_users:
+        handler: src/users/get_users.get_users
+        events:
+            - httpApi:
+                path: /users
+                method: get
+    get_user:
+        handler: src/users/get_user.get_user
+        events:
+            - httpApi:
+                path: /users/{userId}
+                method: get
+    delete_user:
+        handler: src/users/delete_user.delete_user
+        events:
+            - httpApi:
+                path: /users/{userId}
+                method: delete
+    update_user:
+        handler: src/users/update_user.update_user
+        events:
+            - httpApi:
+                path: /users/{userId}/update
+                method: patch
 
+# HASH -> clave de particion, RANGE -> clave de ordenacion = clave compuesta
 resources:
     Resources:
         TaskTable:
             Type: AWS::DynamoDB::Table
             Properties:
-                TableName: TaskTable
+                TableName: task_table
                 BillingMode: PAY_PER_REQUEST
 
                 AttributeDefinitions:
-                    - AttributeName: id
+                    - AttributeName: userId
+                      AttributeType: S
+                    - AttributeName: taskId
                       AttributeType: S
                 KeySchema:
-                    - AttributeName: id
+                    - AttributeName: userId
+                      KeyType: HASH
+                    - AttributeName: taskId
+                      KeyType: RANGE
+        UserTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: user_table
+                BillingMode: PAY_PER_REQUEST
+
+                AttributeDefinitions:
+                    - AttributeName: userId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: userId
                       KeyType: HASH

@@ -1,35 +1,35 @@
 import json
 import boto3
 
-def getTask_handler(event, context):
+def get_user(event, context):
     try:
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('TaskTable')
+        table = dynamodb.Table('user_table')
 
-        id = event['pathParameters']['id']
+        userId = event['pathParameters']['userId']
 
-        response = table.get_item(Key={'id': id})
-        task = response.get('Item')
+        get_result = table.get_item(Key={'userId': userId})
+        user = get_result.get('Item')
         
-        if task:
+        if user:
             return {
                 'statusCode': 200,
-                'body': json.dumps(task)
+                'body': json.dumps(user)
             }
         else:
             return {
                 'statusCode': 404,
                 'body': json.dumps({
-                    'message': 'Task not found'
+                    'message': 'User not found'
                 })
             }
-
+        
     except Exception as error:
-        print(f"Error retrieving task: {error}")
+        print(f"Error retrieving user: {error}")
         return {
             'statusCode': 500,
             'body': json.dumps({
-                'message': 'Failed to retrieve task',
+                'message': 'Failed to retrieve user',
                 'error': str(error)
             })
         }

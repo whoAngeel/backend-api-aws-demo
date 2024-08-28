@@ -1,12 +1,16 @@
 import json
 import boto3
 
-def getTasks_handler(event, context):
+def get_tasks(event, context):
     try:
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('TaskTable')
+        table = dynamodb.Table('task_table')
 
-        response = table.scan()
+        userId = event['pathParameters']['userId']
+
+        response = table.query(
+            KeyConditionExpression = boto3.dynamodb.conditions.Key('userId').eq(userId)
+        )
         tasks = response.get('Items', [])
 
         tasks.sort(key=lambda x: x['createdAt'], reverse=True)

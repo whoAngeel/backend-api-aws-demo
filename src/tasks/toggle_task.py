@@ -2,14 +2,20 @@ import json
 import boto3
 from datetime import datetime
 
-def updateTask_handler(event, context):
+def toggle_task(event, context):
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('TaskTable')
+    table = dynamodb.Table('task_table')
 
-    id = event['pathParameters']['id']
+    userId = event['pathParameters']['userId']
+    taskId = event['pathParameters']['taskId']
 
     try:
-        get_result = table.get_item(Key={'id': id})
+        get_result = table.get_item(
+            Key={
+                'userId': userId,
+                'taskId': taskId
+            }
+        )
         task = get_result.get('Item')
 
         if not task:
@@ -22,7 +28,10 @@ def updateTask_handler(event, context):
         updatedat = datetime.now().isoformat()
 
         updated_result = table.update_item(
-            Key={'id': id},
+            Key={
+                'userId': userId,
+                'taskId': taskId
+            },
             UpdateExpression="SET completed = :newCompleted, updatedAt = :newUpdatedAt",
             ExpressionAttributeValues={
                 ':newCompleted': not task['completed'],

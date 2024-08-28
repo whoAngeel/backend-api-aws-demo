@@ -3,10 +3,12 @@ import boto3
 import uuid
 from datetime import datetime
 
-def addTask_handler(event, context):
+def add_task(event, context):
     try:
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('TaskTable')
+        table = dynamodb.Table('task_table')
+
+        userId = event['pathParameters']['userId']
 
         body = json.loads(event['body'])
         title = body['title']
@@ -14,8 +16,9 @@ def addTask_handler(event, context):
         created_at = updated_at = datetime.now().isoformat()
 
         new_task = {
-            'id': str(uuid.uuid4()),
+            'taskId': str(uuid.uuid4()),
             'title': title,
+            'userId': userId,
             'completed': False,
             'createdAt': created_at,
             'updatedAt': updated_at,
