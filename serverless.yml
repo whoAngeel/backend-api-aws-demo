@@ -60,12 +60,6 @@ functions:
                 path: /users/{userId}/tasks/{taskId}/toggle
                 method: patch
 
-    create_user:
-        handler: src/users/add_user.add_user
-        events:
-            - httpApi:
-                path: /users
-                method: post
     get_users:
         handler: src/users/get_users.get_users
         events:
@@ -90,6 +84,19 @@ functions:
             - httpApi:
                 path: /users/{userId}/update
                 method: patch
+
+    register_user:
+        handler: src/auth/register_user.register_user
+        events:
+            - httpApi:
+                path: /auth/register
+                method: post
+    login_user:
+        handler: src/auth/login_user.login_user
+        events:
+            - httpApi:
+                path: /auth/login
+                method: post
 
 # HASH -> clave de particion, RANGE -> clave de ordenacion = clave compuesta
 resources:
