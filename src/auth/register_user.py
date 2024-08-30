@@ -3,6 +3,7 @@ import boto3
 import uuid
 import hashlib
 import os
+from boto3.dynamodb.conditions import Key
 
 def hash_password(password):
     salt = os.urandom(16)
@@ -18,6 +19,17 @@ def register_user(event, context):
         name = body['name']
         email = body['email']
         password = body['password']
+
+        # Comprobar si el email ya existe
+        response = table.query(
+            IndexName = 'email-index',
+            KeyConditionExpression = Key('email').eq(email)
+        )
+        if 'Items' not in response or len(response['Items']) > 0:
+            return {
+                'statusCode': 409,
+                'body': json.dumps({'message': 'Email already exists'})
+            }
 
         hashed_password = hash_password(password)
 

@@ -4,16 +4,12 @@ import hashlib
 import os
 from boto3.dynamodb.conditions import Key
 
-def hash_password(password):
-    salt = os.urandom(16)
-    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
-    return salt + hashed_password
 
-def validate_password(password, hashed_password):
-    salt = hashed_password[:16]
-    stored_hash = hashed_password[16:]
-    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
-    return hashed_password == stored_hash
+def validate_password(stored_password, password):
+    salt = stored_password[:16]
+    stored_hash = stored_password[16:]
+    password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    return stored_hash == password_hash
 
 def login_user(event, context):
     try:
@@ -36,7 +32,6 @@ def login_user(event, context):
             }
 
         user = response['Items'][0]
-
         stored_password = bytes.fromhex(user['password'])
 
         if validate_password(stored_password, password):
