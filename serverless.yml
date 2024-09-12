@@ -22,6 +22,12 @@ provider:
           Resource:
             - arn:aws:dynamodb:us-east-1:339713100819:table/user_table
 
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:us-east-1:339713100819:table/map_table
+
 functions:
     hello:
         handler: src/handler.hello
@@ -98,6 +104,19 @@ functions:
                 path: /auth/login
                 method: post
 
+    save_subs:
+        handler: src/map/save_subs.save_subs
+        events:
+            - httpApi:
+                path: /map
+                method: post
+    get_subs:
+        handler: src/map/get_subs.get_subs
+        events:
+            - httpApi:
+                path: /map/{nameSubs}
+                method: get
+
 # HASH -> clave de particion, RANGE -> clave de ordenacion = clave compuesta
 resources:
     Resources:
@@ -128,4 +147,16 @@ resources:
                       AttributeType: S
                 KeySchema:
                     - AttributeName: userId
+                      KeyType: HASH
+        LocationTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: map_table
+                BillingMode: PAY_PER_REQUEST
+
+                AttributeDefinitions:
+                    - AttributeName: subsId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: subsId
                       KeyType: HASH

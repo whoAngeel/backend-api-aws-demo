@@ -1,7 +1,6 @@
 import json
 import boto3
 import hashlib
-import os
 from boto3.dynamodb.conditions import Key
 
 
